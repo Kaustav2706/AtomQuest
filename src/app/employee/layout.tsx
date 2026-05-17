@@ -11,7 +11,7 @@ export default async function EmployeeLayout({ children }: { children: React.Rea
 
   return (
     <div className="min-h-screen flex bg-slate-50">
-      <Sidebar role="EMPLOYEE" userEmail={session.user.email} />
+      <Sidebar role="EMPLOYEE" userEmail={session.user.email || ""} />
       <main className="flex-1 p-8 overflow-y-auto max-h-screen">
         <div className="flex justify-between items-center mb-8 border-b pb-4">
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Employee Workspace</h1>
