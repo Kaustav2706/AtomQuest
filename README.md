@@ -4,19 +4,25 @@
 
 ```mermaid
 graph TD
-    Client[Next.js Client Components] -->|API Routes| Server[Next.js App Router (Server)]
-    Server -->|Prisma ORM| DB[(PostgreSQL Database)]
-    Client -->|NextAuth| Auth[Auth Module]
-    Auth -->|Credentials| Server
+
+    Client["Next.js Client Components"] --> API["API Routes"]
+    API --> Server["Next.js App Router (Server)"]
+    Server --> Prisma["Prisma ORM"]
+    Prisma --> DB["PostgreSQL Database"]
+
+    Client --> Auth["NextAuth Auth Module"]
+    Auth --> Credentials["Credentials Provider"]
+    Credentials --> Server
 
     subgraph Roles
-        E[Employee]
-        M[Manager]
-        A[Admin]
+        E["Employee"]
+        M["Manager"]
+        A["Admin"]
     end
 
     Roles --> Client
 ```
+
 
 ## Folder Structure
 
