@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
-import { 
-  ShieldCheck, User, Clock, FileEdit, 
+import {
+  ShieldCheck, User, Clock, FileEdit,
   Download, Search, Filter, Calendar as CalendarIcon,
   PlusCircle, CheckCircle, Unlock, Trash2, X
 } from 'lucide-react'
@@ -31,7 +31,7 @@ export default function AuditTrailClient({ initialLogs }: { initialLogs: AuditLo
   const filteredLogs = useMemo(() => {
     return initialLogs.filter(log => {
       // 1. Search term filter
-      const matchesSearch = 
+      const matchesSearch =
         (log.user?.name || 'System').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (log.reason || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         log.entity.toLowerCase().includes(searchTerm.toLowerCase())
@@ -60,7 +60,7 @@ export default function AuditTrailClient({ initialLogs }: { initialLogs: AuditLo
       log.reason || '',
       new Date(log.timestamp).toLocaleString()
     ])
-    const csvContent = "data:text/csv;charset=utf-8," 
+    const csvContent = "data:text/csv;charset=utf-8,"
       + [headers.join(','), ...rows.map(e => e.map(val => `"${val.replace(/"/g, '""')}"`).join(","))].join("\n")
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement("a")
@@ -100,9 +100,9 @@ export default function AuditTrailClient({ initialLogs }: { initialLogs: AuditLo
             <div className="flex gap-2 items-center flex-wrap">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search user or action..." 
-                  className="pl-9 w-[250px]" 
+                <Input
+                  placeholder="Search user or action..."
+                  className="pl-9 w-[250px]"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -143,7 +143,6 @@ export default function AuditTrailClient({ initialLogs }: { initialLogs: AuditLo
                     mode="single"
                     selected={selectedDate}
                     onSelect={setSelectedDate}
-                    initialFocus
                   />
                   {selectedDate && (
                     <div className="p-2 border-t flex justify-end">
@@ -187,17 +186,16 @@ export default function AuditTrailClient({ initialLogs }: { initialLogs: AuditLo
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge 
-                        variant="outline" 
-                        className={`text-[9px] font-bold uppercase tracking-tighter px-1.5 py-0 border-2 flex items-center w-fit ${
-                          log.action === 'CREATE' ? 'text-blue-600 border-blue-100 bg-blue-50' :
+                      <Badge
+                        variant="outline"
+                        className={`text-[9px] font-bold uppercase tracking-tighter px-1.5 py-0 border-2 flex items-center w-fit ${log.action === 'CREATE' ? 'text-blue-600 border-blue-100 bg-blue-50' :
                           log.action === 'APPROVE' ? 'text-emerald-600 border-emerald-100 bg-emerald-50' :
-                          log.action === 'UNLOCK' ? 'text-amber-600 border-amber-100 bg-amber-50' :
-                          log.action === 'UPDATE' || log.action === 'EDIT' ? 'text-purple-600 border-purple-100 bg-purple-50' :
-                          log.action === 'DELETE' ? 'text-red-600 border-red-100 bg-red-50' :
-                          log.action === 'ASSIGN' ? 'text-indigo-600 border-indigo-100 bg-indigo-50' :
-                          'text-slate-600 border-slate-100 bg-slate-50'
-                        }`}
+                            log.action === 'UNLOCK' ? 'text-amber-600 border-amber-100 bg-amber-50' :
+                              log.action === 'UPDATE' || log.action === 'EDIT' ? 'text-purple-600 border-purple-100 bg-purple-50' :
+                                log.action === 'DELETE' ? 'text-red-600 border-red-100 bg-red-50' :
+                                  log.action === 'ASSIGN' ? 'text-indigo-600 border-indigo-100 bg-indigo-50' :
+                                    'text-slate-600 border-slate-100 bg-slate-50'
+                          }`}
                       >
                         {log.action === 'CREATE' && <PlusCircle className="w-2.5 h-2.5 mr-1" />}
                         {log.action === 'APPROVE' && <CheckCircle className="w-2.5 h-2.5 mr-1" />}
