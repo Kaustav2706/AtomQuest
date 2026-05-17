@@ -62,6 +62,12 @@ graph TD
    ```bash
    npm run dev
    ```
+   # AtomQuest
+
+A role-based performance management system built with Next.js, Prisma, NextAuth, and Tailwind CSS.
+
+## 🚀 Live Demo
+🔗 https://atom-quest-asv6.vercel.app
 
 ## Demo Credentials
 - Employee: `employee@atomquest.com` / `password123`
