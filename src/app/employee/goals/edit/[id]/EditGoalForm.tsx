@@ -29,7 +29,7 @@ export function EditGoalForm({ goal }: EditGoalFormProps) {
   const [loading, setLoading] = useState(false)
   const [thrustArea, setThrustArea] = useState(goal.thrustArea)
   const [title, setTitle] = useState(goal.title)
-  const [uomType, setUomType] = useState(goal.uomType)
+  const [uomType, setUomType] = useState<string | null>(goal.uomType)
   const [targetValue, setTargetValue] = useState(goal.targetValue !== null ? String(goal.targetValue) : '')
   const [weightage, setWeightage] = useState(String(goal.weightage))
   const [deadline, setDeadline] = useState(goal.deadline)
@@ -53,7 +53,7 @@ export function EditGoalForm({ goal }: EditGoalFormProps) {
       await updateGoalAction(goal.id, {
         thrustArea,
         title,
-        uomType,
+        uomType: uomType || '',
         targetValue: targetValue ? parseFloat(targetValue) : null,
         weightage: weight,
         deadline: deadline || null
@@ -116,7 +116,10 @@ export function EditGoalForm({ goal }: EditGoalFormProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="uomType">Unit of Measure (UoM) <span className="text-red-500">*</span></Label>
-                <Select value={uomType} onValueChange={setUomType}>
+                <Select
+                  value={uomType || ""}
+                  onValueChange={(value) => setUomType(value || null)}
+                >
                   <SelectTrigger id="uomType">
                     <SelectValue placeholder="Select measurement type" />
                   </SelectTrigger>

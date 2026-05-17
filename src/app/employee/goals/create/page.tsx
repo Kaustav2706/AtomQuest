@@ -17,7 +17,7 @@ export default function CreateGoal() {
   const [loading, setLoading] = useState(false)
   const [thrustArea, setThrustArea] = useState('')
   const [title, setTitle] = useState('')
-  const [uomType, setUomType] = useState('')
+  const [uomType, setUomType] = useState<string | null>(null)
   const [targetValue, setTargetValue] = useState('')
   const [weightage, setWeightage] = useState('')
   const [deadline, setDeadline] = useState('')
@@ -41,7 +41,7 @@ export default function CreateGoal() {
       await createGoalAction({
         thrustArea,
         title,
-        uomType,
+        uomType: uomType || '',
         targetValue: targetValue ? parseFloat(targetValue) : null,
         weightage: weight,
         deadline: deadline || null
@@ -103,7 +103,10 @@ export default function CreateGoal() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="uomType">Unit of Measure (UoM) <span className="text-red-500">*</span></Label>
-                <Select value={uomType} onValueChange={setUomType}>
+                <Select
+                  value={uomType || ""}
+                  onValueChange={(value) => setUomType(value || null)}
+                >
                   <SelectTrigger id="uomType">
                     <SelectValue placeholder="Select measurement type" />
                   </SelectTrigger>
