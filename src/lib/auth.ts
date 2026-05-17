@@ -12,7 +12,9 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        console.log('[AUTH] Entered email:', credentials?.email)
         if (!credentials?.email || !credentials?.password) {
+          console.log('[AUTH] Missing email or password')
           throw new Error('Invalid credentials')
         }
         
@@ -20,12 +22,14 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email }
         })
         
+        console.log('[AUTH] User found in database:', !!user)
         if (!user || !user.password) {
           throw new Error('Invalid credentials')
         }
         
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
-        if (!isPasswordValid) {
+        const isValid = await bcrypt.compare(credentials.password, user.password)
+        console.log('[AUTH] Bcrypt comparison result:', isValid)
+        if (!isValid) {
           throw new Error('Invalid credentials')
         }
         

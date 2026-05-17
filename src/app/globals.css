@@ -128,3 +128,8 @@
     @apply font-sans;
   }
 }
+
+/* Ensure closed modals/popups/dialogs do not block screen pointer events */
+[data-closed] {
+  display: none !important;
+}

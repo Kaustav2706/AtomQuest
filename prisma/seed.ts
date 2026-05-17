@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 async function main() {
   const passwordHash = await bcrypt.hash('password123', 10)
 
-  // Clean up
+  // Clean up dependent records first
   await prisma.checkInComment.deleteMany()
   await prisma.checkIn.deleteMany()
   await prisma.goalAssignment.deleteMany()
@@ -15,52 +15,79 @@ async function main() {
   await prisma.goalSheet.deleteMany()
   await prisma.sharedGoal.deleteMany()
   await prisma.cycle.deleteMany()
-  await prisma.user.deleteMany()
-  await prisma.team.deleteMany()
-  await prisma.department.deleteMany()
-
-  // Create Departments and Teams
-  const engineering = await prisma.department.create({
-    data: {
-      name: 'Engineering',
-      teams: {
-        create: [{ name: 'Frontend' }, { name: 'Backend' }]
-      }
-    },
+  
+  // Create/Ensure Departments and Teams
+  let department = await prisma.department.findFirst({
+    where: { name: 'Engineering' },
     include: { teams: true }
   })
 
-  // Create Admin
-  const admin = await prisma.user.create({
-    data: {
+  if (!department) {
+    department = await prisma.department.create({
+      data: {
+        name: 'Engineering',
+        teams: {
+          create: [{ name: 'Frontend' }, { name: 'Backend' }]
+        }
+      },
+      include: { teams: true }
+    })
+  }
+
+  // Create Admin with upsert
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@atomquest.com' },
+    update: {
+      name: 'Admin User',
+      password: passwordHash,
+      role: 'ADMIN',
+    },
+    create: {
       name: 'Admin User',
       email: 'admin@atomquest.com',
       password: passwordHash,
-      role: "ADMIN",
+      role: 'ADMIN',
     }
   })
 
-  // Create Manager (L1)
-  const manager = await prisma.user.create({
-    data: {
+  // Create Manager (L1) with upsert
+  const manager = await prisma.user.upsert({
+    where: { email: 'manager@atomquest.com' },
+    update: {
+      name: 'Manager User',
+      password: passwordHash,
+      role: 'MANAGER',
+      departmentId: department.id,
+      teamId: department.teams[0].id
+    },
+    create: {
       name: 'Manager User',
       email: 'manager@atomquest.com',
       password: passwordHash,
-      role: "MANAGER",
-      departmentId: engineering.id,
-      teamId: engineering.teams[0].id
+      role: 'MANAGER',
+      departmentId: department.id,
+      teamId: department.teams[0].id
     }
   })
 
-  // Create Employee
-  const employee = await prisma.user.create({
-    data: {
+  // Create Employee with upsert
+  const employee = await prisma.user.upsert({
+    where: { email: 'employee@atomquest.com' },
+    update: {
+      name: 'Employee User',
+      password: passwordHash,
+      role: 'EMPLOYEE',
+      departmentId: department.id,
+      teamId: department.teams[0].id,
+      managerId: manager.id
+    },
+    create: {
       name: 'Employee User',
       email: 'employee@atomquest.com',
       password: passwordHash,
-      role: "EMPLOYEE",
-      departmentId: engineering.id,
-      teamId: engineering.teams[0].id,
+      role: 'EMPLOYEE',
+      departmentId: department.id,
+      teamId: department.teams[0].id,
       managerId: manager.id
     }
   })
@@ -83,7 +110,7 @@ async function main() {
       thrustArea: 'Engineering Excellence',
       title: 'Reduce Bug Rate',
       description: 'Decrease critical bugs in production by 20%',
-      uomType: "PERCENTAGE_MAX",
+      uomType: 'PERCENTAGE_MAX',
       targetValue: 20,
       deadline: new Date(`${currentYear}-12-31`)
     }
@@ -94,7 +121,7 @@ async function main() {
     data: {
       userId: employee.id,
       cycleId: cycle.id,
-      status: "APPROVED",
+      status: 'APPROVED',
     }
   })
 
@@ -105,7 +132,7 @@ async function main() {
       thrustArea: 'Delivery',
       title: 'Complete Portal Frontend',
       description: 'Build and deploy the Next.js frontend',
-      uomType: "TIMELINE",
+      uomType: 'TIMELINE',
       weightage: 50,
       deadline: new Date(`${currentYear}-10-31`)
     }
@@ -117,7 +144,7 @@ async function main() {
       thrustArea: 'Engineering Excellence',
       title: 'Reduce Bug Rate',
       description: 'Decrease critical bugs in production by 20%',
-      uomType: "PERCENTAGE_MAX",
+      uomType: 'PERCENTAGE_MAX',
       targetValue: 20,
       weightage: 50,
       deadline: new Date(`${currentYear}-12-31`),
@@ -132,7 +159,7 @@ async function main() {
       userId: employee.id,
       quarter: 1,
       actualAchieved: null,
-      status: "ON_TRACK",
+      status: 'ON_TRACK',
       progress: 50,
       notes: 'Frontend skeleton completed.'
     }
